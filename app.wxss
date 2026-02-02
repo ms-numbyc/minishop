@@ -1,0 +1,106 @@
+/* app.wxss */
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+
+/* 商品卡片样式 */
+.goods-card {
+  width: 90%;
+  margin: 20rpx auto;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0,0,0,0.1);
+  background-color: #fff;
+}
+
+.goods-image {
+  width: 100%;
+  height: 300rpx;
+  border-radius: 10rpx;
+}
+
+.goods-info {
+  padding: 20rpx 0;
+}
+
+.goods-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.goods-desc {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.goods-price {
+  font-size: 32rpx;
+  color: #ff4444;
+  font-weight: bold;
+  margin: 10rpx 0;
+}
+
+.goods-stock {
+  font-size: 24rpx;
+  color: #999;
+  margin: 10rpx 0;
+}
+
+/* 按钮样式 */
+.btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  color: #fff;
+  margin-top: 20rpx;
+}
+
+.btn-primary {
+  background-color: #007aff;
+}
+
+.btn-success {
+  background-color: #4cd964;
+}
+
+.btn-warning {
+  background-color: #f0ad4e;
+}
+
+.btn-danger {
+  background-color: #dd524d;
+}
+
+.btn-disabled {
+  background-color: #ccc;
+}
+
+/* 抢购倒计时 */
+.countdown {
+  text-align: center;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #ff4444;
+  font-weight: bold;
+}
+
+/* 页面标题 */
+.page-title {
+  width: 100%;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 36rpx;
+  font-weight: bold;
+  border-bottom: 1rpx solid #eee;
+}

@@ -1,0 +1,38 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-title">限时抢购</view>
+
+  <!-- 倒计时和刷新按钮 -->
+  <view class="header-section">
+    <view wx:if="{{countdown}}" class="countdown">
+      距离下次抢购开始还有 {{countdown}}
+    </view>
+    <button class="refresh-btn" bindtap="onRefreshTap">
+      <text class="refresh-icon">🔄</text> 刷新
+    </button>
+  </view>
+
+  <!-- 商品列表 -->
+  <scroll-view scroll-y="true" class="goods-list">
+    <view class="goods-card" wx:for="{{goodsList}}" wx:key="id">
+      <image class="goods-image" src="{{item.image}}" mode="aspectFill"></image>
+      
+      <view class="goods-info">
+        <view class="goods-title">{{item.name}}</view>
+        <view class="goods-desc">{{item.description}}</view>
+        <view class="goods-price">¥{{item.price}}</view>
+        <view class="goods-stock">库存：{{item.stock}}件</view>
+        
+        <button 
+          class="btn {{item.stock > 0 ? 'btn-primary' : 'btn-disabled'}}" 
+          disabled="{{item.stock <= 0}}"
+          bindtap="onSeckillTap"
+          data-id="{{item.id}}"
+        >
+          {{item.stock > 0 ? '立即抢购' : '已售罄'}}
+        </button>
+      </view>
+    </view>
+  </scroll-view>
+</view>

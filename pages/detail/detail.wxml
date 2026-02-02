@@ -1,0 +1,23 @@
+<!-- pages/detail/detail.wxml -->
+<view class="container">
+  <view wx:if="{{goods}}" class="goods-detail">
+    <image class="goods-image" src="{{goods.image}}" mode="aspectFill"></image>
+    
+    <view class="goods-info">
+      <view class="goods-title">{{goods.name}}</view>
+      <view class="goods-desc">{{goods.description}}</view>
+      <view class="goods-price">¥{{goods.price}}</view>
+      <view class="goods-stock">库存：{{goods.stock}}件</view>
+      
+      <button 
+        class="btn {{goods.stock > 0 ? 'btn-primary' : 'btn-disabled'}}" 
+        disabled="{{goods.stock <= 0}}"
+        bindtap="onSeckillTap"
+      >
+        {{goods.stock > 0 ? '立即抢购' : '已售罄'}}
+      </button>
+    </view>
+  </view>
+  
+  <view wx:else class="loading">加载中...</view>
+</view>
