@@ -24,21 +24,38 @@ Page({
   /**
    * 加载商品详情
    */
-  loadGoodsDetail: function(goodsId) {
-    const goods = getGoodsById(goodsId);
-    
-    if (goods) {
-      this.setData({
-        goods: goods
-      });
-    } else {
+  loadGoodsDetail: async function(goodsId) {
+    wx.showLoading({
+      title: '加载中...'
+    });
+
+    try {
+      const goods = await getGoodsById(goodsId);
+
+      if (goods) {
+        this.setData({
+          goods: goods
+        });
+      } else {
+        wx.showToast({
+          title: '商品不存在',
+          icon: 'none'
+        });
+
+        // 返回上一页
+        wx.navigateBack();
+      }
+    } catch (error) {
+      console.error('加载商品详情失败:', error);
       wx.showToast({
-        title: '商品不存在',
-        icon: 'none'
+        title: '加载失败',
+        icon: 'error'
       });
-      
+
       // 返回上一页
       wx.navigateBack();
+    } finally {
+      wx.hideLoading();
     }
   },
 
@@ -63,30 +80,42 @@ Page({
   /**
    * 执行抢购
    */
-  performSeckill: function(goodsId) {
+  performSeckill: async function(goodsId) {
     wx.showLoading({
       title: '正在抢购...'
     });
 
-    setTimeout(() => {
-      const result = seckill(goodsId);
-      
-      wx.hideLoading();
-      
+    try {
+      const result = await seckill(goodsId);
+
       if (result.success) {
         wx.showToast({
           title: '抢购成功！',
           icon: 'success'
         });
 
-        // 刷新商品详情
-        this.loadGoodsDetail(goodsId);
+        // 刷新商品详情 - 使用返回的商品数据或重新加载
+        if (result.data) {
+          this.setData({
+            goods: result.data
+          });
+        } else {
+          await this.loadGoodsDetail(goodsId);
+        }
       } else {
         wx.showToast({
           title: result.message || '抢购失败',
           icon: 'none'
         });
       }
-    }, 1000);
+    } catch (error) {
+      console.error('抢购失败:', error);
+      wx.showToast({
+        title: '抢购失败',
+        icon: 'error'
+      });
+    } finally {
+      wx.hideLoading();
+    }
   }
 })

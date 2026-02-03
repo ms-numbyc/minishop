@@ -42,11 +42,25 @@ Page({
   /**
    * 加载商品列表
    */
-  loadGoodsList: function() {
-    const goodsList = getGoodsList();
-    this.setData({
-      goodsList: goodsList
+  loadGoodsList: async function() {
+    wx.showLoading({
+      title: '加载中...'
     });
+
+    try {
+      const goodsList = await getGoodsList();
+      this.setData({
+        goodsList: goodsList
+      });
+    } catch (error) {
+      console.error('加载商品列表失败:', error);
+      wx.showToast({
+        title: '加载失败',
+        icon: 'error'
+      });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   /**
@@ -85,20 +99,42 @@ Page({
   /**
    * 删除商品
    */
-  deleteGoods: function(e) {
+  deleteGoods: async function(e) {
     const goodsId = e.currentTarget.dataset.id;
-    
+
     wx.showModal({
       title: '确认删除',
       content: '确定要删除这个商品吗？此操作不可恢复',
-      success: (res) => {
+      success: async (res) => {
         if (res.confirm) {
-          deleteGoods(goodsId);
-          this.loadGoodsList();
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success'
+          wx.showLoading({
+            title: '删除中...'
           });
+
+          try {
+            const result = await deleteGoods(goodsId);
+
+            if (result.success) {
+              await this.loadGoodsList();
+              wx.showToast({
+                title: '删除成功',
+                icon: 'success'
+              });
+            } else {
+              wx.showToast({
+                title: result.message || '删除失败',
+                icon: 'error'
+              });
+            }
+          } catch (error) {
+            console.error('删除商品失败:', error);
+            wx.showToast({
+              title: '删除失败',
+              icon: 'error'
+            });
+          } finally {
+            wx.hideLoading();
+          }
         }
       }
     });
@@ -107,21 +143,36 @@ Page({
   /**
    * 上架/下架商品
    */
-  toggleStatus: function(e) {
+  toggleStatus: async function(e) {
     const goodsId = e.currentTarget.dataset.id;
-    const result = toggleGoodsStatus(goodsId);
-    
-    if (result.success) {
-      this.loadGoodsList();
+
+    wx.showLoading({
+      title: '处理中...'
+    });
+
+    try {
+      const result = await toggleGoodsStatus(goodsId);
+
+      if (result.success) {
+        await this.loadGoodsList();
+        wx.showToast({
+          title: result.message,
+          icon: 'success'
+        });
+      } else {
+        wx.showToast({
+          title: result.message,
+          icon: 'none'
+        });
+      }
+    } catch (error) {
+      console.error('切换商品状态失败:', error);
       wx.showToast({
-        title: result.message,
-        icon: 'success'
+        title: '操作失败',
+        icon: 'error'
       });
-    } else {
-      wx.showToast({
-        title: result.message,
-        icon: 'none'
-      });
+    } finally {
+      wx.hideLoading();
     }
   },
 
@@ -189,7 +240,7 @@ Page({
   /**
    * 保存商品
    */
-  saveGoods: function() {
+  saveGoods: async function() {
     const goods = this.data.editingGoods;
 
     // 验证输入
@@ -217,39 +268,52 @@ Page({
       return;
     }
 
-    // 保存商品
-    let result;
-    if (goods.id) {
-      // 更新现有商品
-      result = updateGoods(goods);
-    } else {
-      // 添加新商品
-      result = addGoods({
-        name: goods.name,
-        description: goods.description,
-        price: parseFloat(goods.price),
-        stock: parseInt(goods.stock),
-        image: goods.image || 'https://via.placeholder.com/300x300.png',
-        status: 'online'
-      });
-    }
+    wx.showLoading({
+      title: goods.id ? '更新中...' : '添加中...'
+    });
 
-    if (result.success) {
-      this.setData({
-        showEditModal: false
-      });
+    try {
+      let result;
+      if (goods.id) {
+        // 更新现有商品
+        result = await updateGoods(goods);
+      } else {
+        // 添加新商品
+        result = await addGoods({
+          name: goods.name,
+          description: goods.description,
+          price: parseFloat(goods.price),
+          stock: parseInt(goods.stock),
+          image: goods.image || 'https://via.placeholder.com/300x300.png',
+          status: 'online'
+        });
+      }
 
-      this.loadGoodsList();
+      if (result.success) {
+        this.setData({
+          showEditModal: false
+        });
 
+        await this.loadGoodsList();
+
+        wx.showToast({
+          title: goods.id ? '更新成功' : '添加成功',
+          icon: 'success'
+        });
+      } else {
+        wx.showToast({
+          title: result.message,
+          icon: 'none'
+        });
+      }
+    } catch (error) {
+      console.error('保存商品失败:', error);
       wx.showToast({
-        title: goods.id ? '更新成功' : '添加成功',
-        icon: 'success'
+        title: goods.id ? '更新失败' : '添加失败',
+        icon: 'error'
       });
-    } else {
-      wx.showToast({
-        title: result.message,
-        icon: 'none'
-      });
+    } finally {
+      wx.hideLoading();
     }
   },
 

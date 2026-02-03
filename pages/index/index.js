@@ -25,11 +25,19 @@ Page({
   /**
    * 加载商品列表
    */
-  loadGoodsList: function() {
-    const goodsList = getGoodsList();
-    this.setData({
-      goodsList: goodsList
-    });
+  loadGoodsList: async function() {
+    try {
+      const goodsList = await getGoodsList();
+      this.setData({
+        goodsList: goodsList
+      });
+    } catch (error) {
+      console.error('加载商品列表失败:', error);
+      wx.showToast({
+        title: '加载失败',
+        icon: 'error'
+      });
+    }
   },
 
   /**
@@ -81,7 +89,7 @@ Page({
    */
   onSeckillTap: function(e) {
     const goodsId = e.currentTarget.dataset.id;
-    const goods = this.data.goodsList.find(item => item.id === goodsId);
+    const goods = this.data.goodsList.find(item => item.Id === goodsId);
     
     if (!goods) {
       wx.showToast({
@@ -106,15 +114,13 @@ Page({
   /**
    * 执行抢购
    */
-  performSeckill: function(goodsId) {
+  performSeckill: async function(goodsId) {
     wx.showLoading({
       title: '正在抢购...'
     });
 
-    setTimeout(() => {
-      const result = seckill(goodsId);
-
-      wx.hideLoading();
+    try {
+      const result = await seckill(goodsId);
 
       if (result.success) {
         wx.showToast({
@@ -122,33 +128,47 @@ Page({
           icon: 'success'
         });
 
-        // 更新商品列表
-        this.loadGoodsList();
+        // 更新商品列表 - 可以使用返回的数据或重新加载
+        await this.loadGoodsList();
       } else {
         wx.showToast({
           title: result.message || '抢购失败',
           icon: 'none'
         });
       }
-    }, 1000);
+    } catch (error) {
+      console.error('抢购失败:', error);
+      wx.showToast({
+        title: '抢购失败',
+        icon: 'error'
+      });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   /**
    * 刷新按钮点击事件
    */
-  onRefreshTap: function() {
+  onRefreshTap: async function() {
     wx.showNavigationBarLoading();
 
-    // 模拟网络请求延迟
-    setTimeout(() => {
-      this.loadGoodsList();
-      wx.hideNavigationBarLoading();
+    try {
+      await this.loadGoodsList();
       wx.showToast({
         title: '刷新成功',
         icon: 'success',
         duration: 1000
       });
-    }, 500);
+    } catch (error) {
+      console.error('刷新失败:', error);
+      wx.showToast({
+        title: '刷新失败',
+        icon: 'error'
+      });
+    } finally {
+      wx.hideNavigationBarLoading();
+    }
   },
 
   /**

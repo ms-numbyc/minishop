@@ -16,21 +16,21 @@
   <!-- 商品列表 -->
   <scroll-view scroll-y="true" class="goods-list">
     <view class="goods-card" wx:for="{{goodsList}}" wx:key="id">
-      <image class="goods-image" src="{{item.image}}" mode="aspectFill"></image>
+      <image class="goods-image" src="{{item.ImageUrl}}" mode="aspectFill"></image>
       
       <view class="goods-info">
-        <view class="goods-title">{{item.name}}</view>
-        <view class="goods-desc">{{item.description}}</view>
-        <view class="goods-price">¥{{item.price}}</view>
-        <view class="goods-stock">库存：{{item.stock}}件</view>
+        <view class="goods-title">{{item.Name}}</view>
+        <view class="goods-desc">{{item.Description}}</view>
+        <view class="goods-price">¥{{item.Price}}</view>
+        <view class="goods-stock">库存：{{item.Stock}}件</view>
         
         <button 
-          class="btn {{item.stock > 0 ? 'btn-primary' : 'btn-disabled'}}" 
-          disabled="{{item.stock <= 0}}"
+          class="btn {{item.Stock > 0 ? 'btn-primary' : 'btn-disabled'}}" 
+          disabled="{{item.Stock <= 0}}"
           bindtap="onSeckillTap"
-          data-id="{{item.id}}"
+          data-id="{{item.Id}}"
         >
-          {{item.stock > 0 ? '立即抢购' : '已售罄'}}
+          {{item.Stock > 0 ? '立即抢购' : '已售罄'}}
         </button>
       </view>
     </view>
